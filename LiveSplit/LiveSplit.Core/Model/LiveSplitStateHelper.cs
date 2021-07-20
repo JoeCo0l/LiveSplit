@@ -25,7 +25,8 @@ namespace LiveSplit.Model
             return null;
         }
 
-        private static TimeSpan? GetSegmentTimeOrSegmentDelta(LiveSplitState state, int splitNumber, bool useCurrentTime, bool segmentTime, string comparison, TimingMethod method)
+        private static TimeSpan? 
+            GetSegmentTimeOrSegmentDelta(LiveSplitState state, int splitNumber, bool useCurrentTime, bool segmentTime, string comparison, TimingMethod method)
         {
             TimeSpan? currentTime;
             if (useCurrentTime)
@@ -116,15 +117,20 @@ namespace LiveSplit.Model
             if (state.CurrentPhase == TimerPhase.Running || state.CurrentPhase == TimerPhase.Paused)
             {
                 var useBestSegment = state.LayoutSettings.ShowBestSegments;
+                // cursplit is the overall time that your comparison run achieved on the active split
                 var curSplit = state.Run[state.CurrentSplitIndex].Comparisons[comparison][method];
+                // currentTime = amount of time since run started
                 var currentTime = state.CurrentTime[method];
+                // curSegment = amount of time since the current segment started (starts when you press split key)
                 var curSegment = GetLiveSegmentTime(state, state.CurrentSplitIndex, method);
+                // best Segment = you best segment time for the active segment (i.e. your "gold")
                 var bestSegment = state.Run[state.CurrentSplitIndex].BestSegmentTime[method];
+                // bestSegmentDelta = current time of active segment - best segment time for active segment
                 var bestSegmentDelta = GetLiveSegmentDelta(state, state.CurrentSplitIndex, BestSegmentsComparisonGenerator.ComparisonName, method);
+                // commparisonDelta = current time of active segment - time of comparison run for the active segment
                 var comparisonDelta = GetLiveSegmentDelta(state, state.CurrentSplitIndex, comparison, method);
 
-                if (splitDelta && currentTime > curSplit
-                    || useBestSegment && bestSegment != null && curSegment > bestSegment && bestSegmentDelta > TimeSpan.Zero
+                if (useBestSegment && bestSegment != null && curSegment > bestSegment && bestSegmentDelta > TimeSpan.Zero
                     || comparisonDelta > TimeSpan.Zero)
                 {
                     if (splitDelta)
